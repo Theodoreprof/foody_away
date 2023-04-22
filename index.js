@@ -3,7 +3,7 @@ const app = express();
 
 const Auth = require('./routes/auth');
 
-app.use('/google/auth', Auth)
+app.use('/auth/google', Auth)
 
 app.get('/', (req, res) => {
     res.send({hi : 'world'});
