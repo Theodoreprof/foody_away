@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 require("dotenv").config();
+require('./models/User');
 
 mongoose.connect(process.env.mongoURI);
 
