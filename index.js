@@ -7,7 +7,7 @@ mongoose.connect(process.env.mongoURI);
 
 const app = express();
 
-const Auth = require('./routes/auth');
+const Auth = require('./services/auth');
 
 app.use('/auth', Auth)
 
