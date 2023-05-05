@@ -7,12 +7,17 @@ mongoose.connect(process.env.mongoURI);
 
 const app = express();
 
+
 const Auth = require('./services/auth');
 
-app.use('/auth', Auth)
+app.use('/auth', Auth);
 
 app.get('/', (req, res) => {
     res.send({hi : 'world'});
+});
+
+app.get('/success', (req, res) => {
+    res.send({hi : 'succesful callback'});
 });
 
 const PORT = process.env.PORT || 5000;

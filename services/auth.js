@@ -9,6 +9,20 @@ const router = express.Router()
 
 const User = mongoose.model('users');
 
+router.use(passport.initialize());
+router.use(passport.session());
+
+passport.serializeUser((user, done) =>{
+    done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+    User.findById(id)
+        .then(user => {
+            done(null, user);
+        });
+});
+
 passport.use( new GoogleStrategy({
     clientID: process.env.googleClientID,
     clientSecret: process.env.googleClientSecret,
@@ -16,21 +30,26 @@ passport.use( new GoogleStrategy({
 }, (accessToken, refreshToken, profile, done) => {
 
     User.findOne({ googleId: profile.id })
-        .then((existingUser) => {
-            if (existingUser) {
-                //id already existing
-                done(null, existingUser);
-            } else {
+         .then((existingUser) => {
+             if (existingUser) {
+                 //id already existing
+                 console.log("existing user")
+;                 done(null, existingUser);
+             } else {
                 new User({googleId: profile.id}).save()
-                    .then(User => done(null, User));
-            }
-        })
-        
+                     .then(user => done(null, user));
+             }
+         })
 }
 ));
 
-router.get('/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile']}, {session: false}));
+router.get('/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile']}));
 
-router.get('/google/callback', passport.authenticate('google'));
+router.get('/google/callback', 
+  passport.authenticate('google'/*, { failureRedirect: '/error' } */),
+  function(req, res) {
+    // Successful authentication, redirect success.
+    res.redirect('/success');
+  });
 
 module.exports = router;
