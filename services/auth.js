@@ -2,7 +2,6 @@ const express = require('express')
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const mongoose = require('mongoose');
-const cookieSession = require('cookie-session');
 
 require("dotenv").config();
 
@@ -10,16 +9,6 @@ const router = express.Router()
 
 const User = mongoose.model('users');
 
-router.use(
-    cookieSession({
-        //30 days
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        keys: [process.env.cookieKey]
-    })
-);
-
-router.use(passport.initialize());
-router.use(passport.session());
 
 passport.serializeUser((user, done) =>{
     done(null, user.id);
@@ -61,6 +50,11 @@ router.get('/google/callback',
     console.log("succesful callback")
     res.redirect('/success');
   });
+
+  router.get('/api/logout', (req, res) => {
+    req.logout();
+    res.send(req.user);
+});
 
 router.get('/api/current_user', (req, res) => {
     res.send(req.user);
