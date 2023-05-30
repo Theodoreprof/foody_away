@@ -24,7 +24,7 @@ passport.deserializeUser((id, done) => {
 passport.use( new GoogleStrategy({
     clientID: process.env.googleClientID,
     clientSecret: process.env.googleClientSecret,
-    callbackURL: 'http://localhost:5000/auth/google/callback',
+    callbackURL: 'https://foodyaway-production.up.railway.app/auth/google/callback',
 }, (accessToken, refreshToken, profile, done) => {
 
     User.findOne({ googleId: profile.id })
