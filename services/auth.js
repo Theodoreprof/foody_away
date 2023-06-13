@@ -24,20 +24,21 @@ passport.deserializeUser((id, done) => {
 passport.use( new GoogleStrategy({
     clientID: process.env.googleClientID,
     clientSecret: process.env.googleClientSecret,
-    callbackURL: process.env.callbackURI,
-}, (accessToken, refreshToken, profile, done) => {
+    callbackURL: '/auth/google/callback',
+    proxy: true
+}, async (accessToken, refreshToken, profile, done) => {
 
-    User.findOne({ googleId: profile.id })
-         .then((existingUser) => {
-             if (existingUser) {
+    const existingUser = await User.findOne({ googleId: profile.id })
+             
+            if (existingUser) {
                  //id already existing
-                 console.log("existing user")
-;                 done(null, existingUser);
+                console.log("existing user")
+;               done(null, existingUser);
              } else {
-                new User({googleId: profile.id}).save()
-                     .then(user => done(null, user));
+                const user = await new User({googleId: profile.id}).save()
+                done(null, user);
              }
-         })
+
 }
 ));
 
@@ -51,7 +52,7 @@ router.get('/google/callback',
     res.redirect('/success');
   });
 
-  router.get('/api/logout', (req, res) => {
+router.get('/api/logout', (req, res) => {
     req.logout();
     res.send(req.user);
 });
